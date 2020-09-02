@@ -116,12 +116,13 @@ try {
     cd $configuration
     Assert-Consistent-Naming "$binaryFilename.dll" "*.dll"
     Run-Command -Quiet { & rm *.exp }
-    Run-Command -Quiet { & rm $x86Directory\* }
+    Run-Command -Quiet { & rm $x86Directory\* -ErrorAction SilentlyContinue  }
     Run-Command -Quiet { & mkdir -fo $x86Directory }
     Run-Command -Quiet -Fatal { & copy -fo * $x86Directory -Exclude *.lib }
 
     Write-Output "Building 64-bit..."
     cd ..
+    Run-Command -Quiet { & remove-item build64 -recurse -force -ErrorAction SilentlyContinue }
     Run-Command -Quiet { & mkdir build64 }
     cd build64
     Run-Command -Quiet -Fatal { & $cmake -G "Visual Studio 16 2019" -A "x64" -D THREADSAFE=ON -D ENABLE_TRACE=ON -D "BUILD_CLAR=$build_clar" -D "LIBGIT2_FILENAME=$binaryFilename" ../.. }
@@ -130,7 +131,7 @@ try {
     cd $configuration
     Assert-Consistent-Naming "$binaryFilename.dll" "*.dll"
     Run-Command -Quiet { & rm *.exp }
-    Run-Command -Quiet { & rm $x64Directory\* }
+    Run-Command -Quiet { & rm $x64Directory\* -ErrorAction SilentlyContinue }
     Run-Command -Quiet { & mkdir -fo $x64Directory }
     Run-Command -Quiet -Fatal { & copy -fo * $x64Directory -Exclude *.lib }
 

@@ -16,7 +16,13 @@ jobs:
 
       - name: Build
         shell: pwsh
-        run: .\build.libgit2.ps1 -vs 16
+        run: ./build.libgit2.ps1 -vs 16
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: runtimes
+          path: ./nuget.package/runtimes/**/*
 
   build_linux:
     name: Build [Linux]
@@ -32,7 +38,14 @@ jobs:
       - name: Build
         env: 
           RID: linux-x64
+          
         run: ./dockerbuild.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: runtimes
+          path: ./nuget.package/runtimes/**/*
 
 
   

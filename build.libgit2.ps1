@@ -110,7 +110,7 @@ try {
     Run-Command -Quiet { & remove-item build -recurse -force -ErrorAction SilentlyContinue }
     Run-Command -Quiet { & mkdir build }
     cd build
-    Run-Command -Quiet -Fatal { & $cmake -G "Visual Studio $vs" -D ENABLE_TRACE=ON -D "BUILD_CLAR=$build_clar" -D "LIBGIT2_FILENAME=$binaryFilename" .. }
+    Run-Command -Quiet -Fatal { & $cmake -G "Visual Studio 16 2019" -D ENABLE_TRACE=ON -D "BUILD_CLAR=$build_clar" -D "LIBGIT2_FILENAME=$binaryFilename" .. }
     Run-Command -Quiet -Fatal { & $cmake --build . --config $configuration }
     if ($test.IsPresent) { Run-Command -Quiet -Fatal { & $ctest -V . } }
     cd $configuration
@@ -124,7 +124,7 @@ try {
     cd ..
     Run-Command -Quiet { & mkdir build64 }
     cd build64
-    Run-Command -Quiet -Fatal { & $cmake -G "Visual Studio $vs Win64" -D THREADSAFE=ON -D ENABLE_TRACE=ON -D "BUILD_CLAR=$build_clar" -D "LIBGIT2_FILENAME=$binaryFilename" ../.. }
+    Run-Command -Quiet -Fatal { & $cmake -G "Visual Studio 16 2019" -A "x64" -D THREADSAFE=ON -D ENABLE_TRACE=ON -D "BUILD_CLAR=$build_clar" -D "LIBGIT2_FILENAME=$binaryFilename" ../.. }
     Run-Command -Quiet -Fatal { & $cmake --build . --config $configuration }
     if ($test.IsPresent) { Run-Command -Quiet -Fatal { & $ctest -V . } }
     cd $configuration

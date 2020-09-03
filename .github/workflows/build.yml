@@ -1,0 +1,104 @@
+name: Build
+
+on: [ push ]
+
+jobs:
+  build_windows:
+    name: Build [Windows]
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Build
+        shell: pwsh
+        run: ./build.libgit2.ps1 -vs 16
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: runtimes
+          path: ./nuget.package/runtimes/**/*
+
+  build_linux:
+    name: Build [Linux]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        runtime: [ "linux-x64", "linux-musl-x64", "linux-arm64", "linux-arm" ]
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Build
+        env: 
+          RID: ${{ matrix.runtime }}
+        run: ./dockerbuild.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: runtimes
+          path: ./nuget.package/runtimes/**/*
+
+  build_osx:
+    name: Build [Mac OS X]
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Build
+        env: 
+          RID: osx
+        run: ./build.libgit2.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: runtimes
+          path: ./nuget.package/runtimes/**/*
+
+  package:
+    name: Package
+    runs-on: windows-latest
+    needs: [ build_windows, build_linux, build_osx ]
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+        with:
+          submodules: false
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: runtimes
+          path: ./nuget.package/runtimes
+
+      - name: Create package
+        shell: pwsh
+        run: ./buildpackage.ps1 1.0.1 -Pre:$true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: nuget
+          path: ./*.nupkg
+
+
+  
+

@@ -91,7 +91,7 @@ jobs:
 
       - name: Create package
         shell: pwsh
-        run: ./buildpackage.ps1 1.0.1-sknet.inrulegitstorage -Pre:$false
+        run: ./buildpackage.ps1 1.0.1-sknet.inrulegitstorage.2 -Pre:$false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
